@@ -34,7 +34,7 @@ class GuestsTabScreenState extends State<GuestsTabScreen>
   Future<void> refreshGuestList() async {
     setState(() => _isLoading = true);
     try {
-      final guests = await GuestRepository().fetchGuests(widget.eventId);
+      final guests = await GuestRepository().fetchSentGuests(widget.eventId);
       setState(() {
         _guests = guests;
         _isLoading = false;
@@ -113,24 +113,6 @@ class GuestsTabScreenState extends State<GuestsTabScreen>
                         buildGuestList(checkedInGuests),
                       ],
                     ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => QRScannerPage(
-                    eventId: widget.eventId,
-                    onCheckInSuccess: refreshGuestList,
-                  ),
-                ),
-              );
-            },
-            icon: const Icon(Icons.qr_code_scanner),
-            label: const Text('QR скан хийх'),
-          ),
         ),
       ],
     );

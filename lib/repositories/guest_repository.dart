@@ -1,27 +1,34 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/guest.dart';
-import '../services/auth_service.dart';
+import 'package:reginvite_app/models/guest.dart';
+import 'package:reginvite_app/services/auth_service.dart';
 
 class GuestRepository {
   final String baseUrl = 'https://reginvite-backend.onrender.com';
 
-  Future<List<Guest>> fetchGuests(int eventId) async {
+  Future<List<Guest>> fetchSentGuests(int eventId) async {
     final token = await AuthService.getToken();
+    if (token == null) {
+      throw Exception('Токен олдсонгүй. Нэвтэрсэн эсэхээ шалгана уу.');
+    }
+
     final headers = {
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
     };
 
-    final url = Uri.parse('$baseUrl/guests?eventId=$eventId&page=1&limit=100');
-    final response = await http.get(url, headers: headers);
+    final uri = Uri.parse('$baseUrl/guests').replace(queryParameters: {
+      'eventId': '$eventId',
+      'status': 'Sent',
+    });
+
+    final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final List guests = jsonData['data'];
-      return guests.map((e) => Guest.fromJson(e)).toList();
+      final data = jsonDecode(response.body)['data'] as List;
+      return data.map((e) => Guest.fromJson(e)).toList();
     } else {
-      throw Exception('Зочдын жагсаалтыг авч чадсангүй');
+      throw Exception('Sent зочдыг татахад алдаа гарлаа');
     }
   }
 

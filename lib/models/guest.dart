@@ -4,8 +4,8 @@ class Guest {
   final String lastName;
   final String email;
   final String phone;
-  final bool checkedIn;
   final String status;
+  final bool checkedIn;
 
   Guest({
     required this.id,
@@ -13,9 +13,11 @@ class Guest {
     required this.lastName,
     required this.email,
     required this.phone,
-    required this.checkedIn,
     required this.status,
+    required this.checkedIn,
   });
+
+  String get fullName => '$firstName $lastName';
 
   factory Guest.fromJson(Map<String, dynamic> json) {
     return Guest(
@@ -24,10 +26,8 @@ class Guest {
       lastName: json['last_name'],
       email: json['email'],
       phone: json['phone'],
-      checkedIn: json['checked_in'],
       status: json['status'],
+      checkedIn: json['checked_in'] ?? false,
     );
   }
-
-  String get fullName => '$firstName $lastName';
 }

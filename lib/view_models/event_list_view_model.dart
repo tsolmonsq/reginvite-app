@@ -24,9 +24,11 @@ class EventListViewModel extends ChangeNotifier {
     try {
       final token = await AuthService.getToken();
       if (token == null) {
-        print('token >>>: $token');
+        print('❗️Token олдсонгүй.');
+        throw Exception('Нэвтрэх шаардлагатай');
       }
-      _events = await _repository.fetchEvents();
+
+      _events = await _repository.fetchEvents(); // ✅ Зөв function
     } catch (e) {
       print('🚨 Event fetch error: $e');
       _error = e.toString();

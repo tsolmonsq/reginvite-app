@@ -28,8 +28,10 @@ class EventRepository {
     print("📡 [BODY] ${response.body}");
 
     if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
-      return data.map((e) => Event.fromJson(e)).toList();
+      final Map<String, dynamic> result = json.decode(response.body);
+      final List<dynamic> eventList = result['data']; // 👈 зөв зам
+
+      return eventList.map((e) => Event.fromJson(e)).toList();
     } else {
       throw Exception('Эвентүүдийг авч чадсангүй');
     }
