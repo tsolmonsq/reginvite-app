@@ -1,0 +1,2 @@
+/Users/tsolmonbatbold/Desktop/bsa/reginvite-app/android/app/.cxx/Debug/376568k2/x86/CMakeFiles/edit_cache.dir
+/Users/tsolmonbatbold/Desktop/bsa/reginvite-app/android/app/.cxx/Debug/376568k2/x86/CMakeFiles/rebuild_cache.dir

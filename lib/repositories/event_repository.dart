@@ -4,7 +4,7 @@ import 'package:reginvite_app/services/auth_service.dart';
 import '../models/event.dart';
 
 class EventRepository {
-  final String baseUrl = 'https://reginvite-backend.onrender.com';
+  final String baseUrl = 'http://localhost:3002';
 
   Future<List<Event>> fetchEvents() async {
     final token = await AuthService.getToken();
