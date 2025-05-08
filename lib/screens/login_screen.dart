@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final url = Uri.parse('https://reginvite-backend.onrender.com/auth/login');
+    final url = Uri.parse('https://reginvite-new-backend.onrender.com/auth/login');
 
     try {
       final res = await http.post(

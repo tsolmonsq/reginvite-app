@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:reginvite_app/repositories/event_repository.dart';
 import '../models/event.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
@@ -137,6 +136,9 @@ class EventListScreen extends StatelessWidget {
                                       .format(event.startTime),
                                   style: TextStyle(color: Colors.grey[700]),
                                 ),
+                                const SizedBox(height: 4),
+                                Text(event.location,
+                                    style: TextStyle(color: Colors.grey[600])),
                               ],
                             ),
                           ),

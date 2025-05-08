@@ -4,7 +4,7 @@ import 'package:reginvite_app/models/guest.dart';
 import 'package:reginvite_app/services/auth_service.dart';
 
 class GuestRepository {
-  final String baseUrl = 'http://localhost:3002';
+  final String baseUrl = 'https://reginvite-new-backend.onrender.com/';
 
   Future<List<Guest>> fetchSentGuests(int eventId) async {
     final token = await AuthService.getToken();
@@ -18,8 +18,7 @@ class GuestRepository {
     };
 
     final uri = Uri.parse('$baseUrl/guests').replace(queryParameters: {
-      'eventId': '$eventId',
-      'status': 'Sent',
+      'eventId': '$eventId'
     });
 
     final response = await http.get(uri, headers: headers);
