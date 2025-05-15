@@ -4,7 +4,7 @@ import 'package:reginvite_app/services/auth_service.dart';
 import '../models/event.dart';
 
 class EventRepository {
-  final String baseUrl = 'https://reginvite-new-backend.onrender.com/';
+  final String baseUrl = 'http://localhost:3002';
 
   Future<List<Event>> fetchEvents() async {
     final token = await AuthService.getToken();
@@ -23,23 +23,17 @@ class EventRepository {
       headers: headers,
     );
 
-    print("📡 [TOKEN] $token");
-    print("📡 [STATUS] ${response.statusCode}");
-    print("📡 [BODY] ${response.body}");
-
     if (response.statusCode == 200) {
       try {
         final Map<String, dynamic> result = json.decode(response.body);
         final List<dynamic> eventList = result['data'];
 
-        // Ensure the event list is not empty or null
         if (eventList.isEmpty) {
           throw Exception('Эвентүүд олдсонгүй.');
         }
 
         return eventList.map((e) => Event.fromJson(e)).toList();
       } catch (e) {
-        print("📡 [ERROR] Error parsing event data: $e");
         throw Exception('Өгөгдлийг засахад алдаа гарлаа.');
       }
     } else if (response.statusCode == 401) {

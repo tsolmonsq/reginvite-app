@@ -4,7 +4,7 @@ import 'package:reginvite_app/models/guest.dart';
 import 'package:reginvite_app/services/auth_service.dart';
 
 class GuestRepository {
-  final String baseUrl = 'https://reginvite-new-backend.onrender.com/';
+  final String baseUrl = 'http://localhost:3002';
 
   Future<List<Guest>> fetchSentGuests(int eventId) async {
     final token = await AuthService.getToken();
@@ -40,10 +40,7 @@ class GuestRepository {
 
     final url = Uri.parse('$baseUrl/guests/checkin/$qrToken');
     final response = await http.post(url, headers: headers);
-
-    print('[CHECK-IN] Status: ${response.statusCode}');
-    print('[CHECK-IN] Body: ${response.body}');
-
+    
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = json.decode(response.body);
       return {
