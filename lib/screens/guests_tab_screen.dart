@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
-import '../models/guest.dart';
-import '../repositories/guest_repository.dart';
-import 'qr_scanner_page.dart';
+
+class Guest {
+  final String fullName;
+  final String email;
+  final bool checkedIn;
+
+  Guest({
+    required this.fullName,
+    required this.email,
+    this.checkedIn = false,
+  });
+}
 
 class GuestsTabScreen extends StatefulWidget {
   final int eventId;
@@ -20,35 +29,49 @@ class GuestsTabScreen extends StatefulWidget {
 class GuestsTabScreenState extends State<GuestsTabScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<Guest> _guests = [];
+  List<Guest> _allGuests = [];
+  List<Guest> _checkedInGuests = [];
   bool _isLoading = true;
-  String? _error;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    refreshGuestList();
+    refreshGuestList(); // энэ нэрийг home_screen.dart дээрээс дуудаж болно
   }
 
-  Future<void> refreshGuestList() async {
-    setState(() => _isLoading = true);
-    try {
-      final guests = await GuestRepository().fetchSentGuests(widget.eventId);
-      setState(() {
-        _guests = guests;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
+  /// ⏬ Энэ method-г гаднаас дуудаж болдог!
+  void refreshGuestList() {
+    setState(() {
+      _allGuests = [
+        Guest(
+          fullName: 'Наранболд Зул',
+          email: 'jenniesum10@gmail.com',
+          checkedIn: false,
+        ),
+        Guest(
+          fullName: 'Цолмон Батболд',
+          email: 'tsolmonbatbold88@gmail.com',
+          checkedIn: false, // "Бүх зочид" дээр ирээгүй
+        ),
+      ];
+
+      _checkedInGuests = [
+        Guest(
+          fullName: 'Цолмон Батболд',
+          email: 'tsolmonbatbold88@gmail.com',
+          checkedIn: true, // "Ирсэн зочид" дээр ирсэн
+        ),
+      ];
+
+      _isLoading = false;
+    });
   }
 
   Widget buildGuestList(List<Guest> guests) {
-    if (guests.isEmpty) return const Center(child: Text('Зочин олдсонгүй'));
+    if (guests.isEmpty) {
+      return const Center(child: Text('Зочин олдсонгүй'));
+    }
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: guests.length,
@@ -61,13 +84,14 @@ class GuestsTabScreenState extends State<GuestsTabScreen>
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: guest.checkedIn ? Colors.green : Colors.grey[300]!,
+              width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withOpacity(0.05), 
                 blurRadius: 4,
                 offset: const Offset(0, 2),
-              )
+              ),
             ],
           ),
           child: ListTile(
@@ -87,34 +111,32 @@ class GuestsTabScreenState extends State<GuestsTabScreen>
 
   @override
   Widget build(BuildContext context) {
-    final checkedInGuests = _guests.where((g) => g.checkedIn).toList();
-
-    return Column(
-      children: [
-        TabBar(
-          controller: _tabController,
-          labelColor: Theme.of(context).colorScheme.primary,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          tabs: const [
-            Tab(text: 'Бүх зочид'),
-            Tab(text: 'Ирсэн зочид'),
-          ],
-        ),
-        Expanded(
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-                  ? Center(child: Text('Алдаа: $_error'))
-                  : TabBarView(
-                      controller: _tabController,
-                      children: [
-                        buildGuestList(_guests),
-                        buildGuestList(checkedInGuests),
-                      ],
-                    ),
-        ),
-      ],
+    return Scaffold(
+      body: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            labelColor: Theme.of(context).colorScheme.primary,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Theme.of(context).colorScheme.primary,
+            tabs: const [
+              Tab(text: 'Бүх зочид'),
+              Tab(text: 'Ирсэн зочид'),
+            ],
+          ),
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : TabBarView(
+                    controller: _tabController,
+                    children: [
+                      buildGuestList(_allGuests),
+                      buildGuestList(_checkedInGuests),
+                    ],
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

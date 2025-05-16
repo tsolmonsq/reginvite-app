@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import '../models/event.dart';
 import '../screens/home_screen.dart';
-import '../screens/login_screen.dart';
-import '../services/auth_service.dart';
-import '../view_models/event_list_view_model.dart';
 
 class EventListScreen extends StatelessWidget {
   final String staffName;
@@ -51,13 +46,9 @@ class EventListScreen extends StatelessWidget {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                onPressed: () async {
+                onPressed: () {
                   Navigator.pop(context);
-                  await AuthService.logout();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
+                  // TODO: logout logic
                 },
               ),
             ),
@@ -70,88 +61,87 @@ class EventListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => EventListViewModel(EventRepository())..loadEvents(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Эвентүүд'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.account_circle),
-              onPressed: () => showProfileSheet(context, staffName),
-            ),
-          ],
-        ),
-        body: Consumer<EventListViewModel>(
-          builder: (context, viewModel, _) {
-            if (viewModel.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (viewModel.error != null) {
-              return Center(child: Text('Алдаа: ${viewModel.error}'));
-            } else if (viewModel.events.isEmpty) {
-              return const Center(child: Text('Ямар ч эвент алга'));
-            }
+    final events = [
+      {
+        "id": 1,
+        "title": "Tech Summit 2025",
+        "location": "Шангри-Ла зочид буудал, Улаанбаатар",
+        "startTime": DateTime.parse("2025-06-10T02:00:00.000Z")
+      },
+      {
+        "id": 2,
+        "title": "Залуусын урлагийн наадам",
+        "location": "Соёлын төв өргөө",
+        "startTime": DateTime.parse("2025-07-01T06:00:00.000Z")
+      }
+    ];
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: viewModel.events.length,
-              itemBuilder: (context, index) {
-                final event = viewModel.events[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => HomeScreen(
-                            staffName: staffName,
-                            eventId: event.id,
-                            eventName: event.title,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.calendar_month,
-                              size: 36, color: Color(0xFF347786)),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(event.title,
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 4),
-                                Text(
-                                  DateFormat.yMMMMd('mn')
-                                      .format(event.startTime),
-                                  style: TextStyle(color: Colors.grey[700]),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(event.location,
-                                    style: TextStyle(color: Colors.grey[600])),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.chevron_right, color: Colors.grey),
-                        ],
-                      ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Эвентүүд'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () => showProfileSheet(context, staffName),
+          ),
+        ],
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: events.length,
+        itemBuilder: (context, index) {
+          final event = events[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => HomeScreen(
+                      staffName: staffName,
+                      eventId: event["id"] as int,
+                      eventName: event["title"] as String,
                     ),
                   ),
                 );
               },
-            );
-          },
-        ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const Icon(Icons.calendar_month,
+                        size: 36, color: Color(0xFF347786)),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(event["title"] as String,
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat.yMMMMd('mn')
+                                .format(event["startTime"] as DateTime),
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(event["location"] as String,
+                              style: TextStyle(color: Colors.grey[600])),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: Colors.grey),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

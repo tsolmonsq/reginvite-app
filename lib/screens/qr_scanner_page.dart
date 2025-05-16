@@ -1,7 +1,6 @@
-// qr_scanner_page.dart
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../repositories/guest_repository.dart';
+import 'guests_tab_screen.dart'; // импорт хийсэн эсэхээ шалгаарай
 
 class QRScannerPage extends StatefulWidget {
   final int eventId;
@@ -25,9 +24,10 @@ class _QRScannerPageState extends State<QRScannerPage> {
     if (isProcessing) return;
     setState(() => isProcessing = true);
 
-    controller.stop();
+    controller.stop(); // QR scanner-г зогсооно
 
     final String? code = barcode.rawValue;
+
     if (code == null || !code.contains('/')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('QR код буруу байна')),
@@ -37,39 +37,18 @@ class _QRScannerPageState extends State<QRScannerPage> {
       return;
     }
 
-    final token = code.split('/').last;
+  
+    widget.onCheckInSuccess();
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GuestsTabScreen(
+          eventId: widget.eventId,
+          eventName: "QR-р бүртгэгдсэн эвент",
+        ),
+      ),
     );
-
-    try {
-      final repo = GuestRepository();
-      final result = await repo.checkInGuest(token);
-
-      Navigator.pop(context); // Close loader
-
-      if (result['success']) {
-        widget.onCheckInSuccess();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Амжилттай бүртгэгдлээ')),
-        );
-        Navigator.pop(context);
-      } else {
-        controller.start();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Амжилтгүй боллоо')),
-        );
-      }
-    } catch (e) {
-      Navigator.pop(context);
-      controller.start();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Алдаа: $e')),
-      );
-    }
 
     setState(() => isProcessing = false);
   }
